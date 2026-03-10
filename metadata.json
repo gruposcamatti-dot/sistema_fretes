@@ -1,0 +1,5 @@
+{
+  "name": "Frete_Geral",
+  "description": "Dashboard de análise logística para visualizar, filtrar e calcular faturamento de fretes com integração ao Supabase.",
+  "requestFramePermissions": []
+}
