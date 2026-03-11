@@ -4,6 +4,10 @@ import { DashboardKPIs } from '@/src/components/dashboard/DashboardKPIs';
 import { DashboardFilters } from '@/src/components/dashboard/DashboardFilters';
 import { DashboardCharts } from '@/src/components/charts/DashboardCharts';
 import { FreightTable } from '@/src/components/tables/FreightTable';
+import { ResumoFilters } from '@/src/components/dashboard/ResumoFilters';
+import { ResumoKPIs } from '@/src/components/dashboard/ResumoKPIs';
+import { ResumoTable } from '@/src/components/dashboard/ResumoTable';
+import { BancoDeDadosView } from '@/src/components/banco-de-dados/BancoDeDadosView';
 import { useFreightData } from '@/src/hooks/useFreightData';
 import { FilterState } from '@/src/types';
 import { Loader2, RefreshCcw, Download } from 'lucide-react';
@@ -24,31 +28,21 @@ export const DashboardPage = () => {
     setTrigger(prev => prev + 1);
   };
 
-  const today = new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
   return (
     <Layout activeMenu={activeMenu} onMenuChange={setActiveMenu}>
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-2">
           <div>
             <h1 className="text-2xl md:text-3xl font-display font-bold text-slate-900 tracking-tight">
-              {activeMenu === 'dashboard' ? 'Visão Geral' : 
-               activeMenu === 'viagens' ? 'Gestão de Viagens' : 'Em Desenvolvimento'}
+              {activeMenu === 'dashboard' ? 'Visão Geral' :
+                activeMenu === 'resumo' ? 'Resumo por Motorista/Frota' :
+                activeMenu === 'banco_de_dados' ? 'Banco de Dados' :
+                activeMenu === 'viagens' ? 'Gestão de Viagens' : 'Em Desenvolvimento'}
             </h1>
-            <p className="text-sm text-slate-500 mt-1 capitalize">{today}</p>
           </div>
           <div className="flex items-center gap-3">
-            {trigger > 0 && activeMenu === 'viagens' && (
-              <button 
-                onClick={refetch}
-                disabled={loading}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50 hover:-translate-y-0.5 hover:shadow-md active:scale-95 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
-              >
-                <RefreshCcw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-                Atualizar
-              </button>
-            )}
-            <button 
+
+            <button
               className="p-2.5 bg-yellow-500 text-slate-900 rounded-xl hover:bg-yellow-600 hover:-translate-y-0.5 hover:shadow-lg active:scale-95 transition-all duration-200 shadow-sm shadow-yellow-500/20"
               title="Exportar Relatório (PDF)"
             >
@@ -57,14 +51,25 @@ export const DashboardPage = () => {
           </div>
         </div>
 
-        <DashboardFilters 
-          filters={filters} 
-          setFilters={setFilters} 
-          onGenerate={handleGenerate}
-          loading={loading}
-        />
+        {activeMenu === 'resumo' ? (
+          <ResumoFilters
+            filters={filters}
+            setFilters={setFilters}
+            onGenerate={handleGenerate}
+            loading={loading}
+          />
+        ) : activeMenu !== 'banco_de_dados' ? (
+          <DashboardFilters
+            filters={filters}
+            setFilters={setFilters}
+            onGenerate={handleGenerate}
+            loading={loading}
+          />
+        ) : null}
 
-        {trigger === 0 ? (
+        {activeMenu === 'banco_de_dados' ? (
+            <BancoDeDadosView />
+        ) : trigger === 0 ? (
           <div className="bg-white border border-white p-12 rounded-2xl flex flex-col items-center justify-center text-center shadow-md h-64">
             <div className="w-16 h-16 bg-amber-50/50 border border-amber-100/50 rounded-full flex items-center justify-center mb-4">
               <span className="text-3xl">📊</span>
@@ -101,10 +106,10 @@ export const DashboardPage = () => {
                 </div>
               </div>
             )}
-            
+
             {activeMenu === 'dashboard' && (
               <>
-                <DashboardKPIs data={data} />
+                <DashboardKPIs data={data} filters={filters} />
                 <DashboardCharts data={data} />
               </>
             )}
@@ -113,7 +118,14 @@ export const DashboardPage = () => {
               <FreightTable data={data} />
             )}
 
-            {activeMenu !== 'dashboard' && activeMenu !== 'viagens' && (
+            {activeMenu === 'resumo' && (
+              <>
+                <ResumoKPIs data={data} />
+                <ResumoTable data={data} filters={filters} />
+              </>
+            )}
+
+            {activeMenu !== 'dashboard' && activeMenu !== 'viagens' && activeMenu !== 'resumo' && (
               <div className="bg-white border border-slate-200/70 p-12 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm">
                 <div className="w-16 h-16 bg-amber-50/50 border border-amber-100/50 rounded-full flex items-center justify-center mb-4">
                   <span className="text-3xl">🚧</span>

@@ -1,16 +1,17 @@
-import { FreightRecord } from '@/src/types';
-import { 
-  Wallet, 
-  Truck, 
-  Box, 
-  Activity 
+import { FreightRecord, FilterState } from '@/src/types';
+import {
+  Wallet,
+  Truck,
+  Box,
+  Activity
 } from 'lucide-react';
 
 type DashboardKPIsProps = {
   data: FreightRecord[];
+  filters?: FilterState;
 };
 
-export const DashboardKPIs = ({ data }: DashboardKPIsProps) => {
+export const DashboardKPIs = ({ data, filters }: DashboardKPIsProps) => {
   const faturamentoTotal = data.reduce((sum, record) => sum + record.valor, 0);
   const totalViagens = data.length;
   const volumeTotal = data.reduce((sum, record) => sum + record.volume, 0);
@@ -19,6 +20,11 @@ export const DashboardKPIs = ({ data }: DashboardKPIsProps) => {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
   };
+
+  let volumeUnit = 't';
+  if (filters?.segmento === 'CONCRETEIRAS' || filters?.segmento === 'FABRICA_DE_TUBOS') {
+    volumeUnit = 'm³';
+  }
 
   const kpis = [
     {
@@ -43,7 +49,7 @@ export const DashboardKPIs = ({ data }: DashboardKPIsProps) => {
     },
     {
       title: 'Volume Transportado',
-      value: `${volumeTotal.toLocaleString('pt-BR')} t`,
+      value: `${volumeTotal.toLocaleString('pt-BR')} ${volumeUnit}`,
       icon: Box,
       color: 'text-amber-600',
       iconBg: 'bg-amber-100/60',
@@ -68,7 +74,7 @@ export const DashboardKPIs = ({ data }: DashboardKPIsProps) => {
       {kpis.map((kpi, index) => {
         const Icon = kpi.icon;
         return (
-          <div key={index} className="bg-white rounded-2xl p-6 shadow-md border border-white hover:shadow-lg hover:border-white transition-all duration-300 relative overflow-hidden group cursor-pointer">
+          <div key={index} className="bg-slate-50/50 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md hover:border-slate-200 hover:bg-white transition-all duration-300 relative overflow-hidden group cursor-pointer">
             <div className="flex justify-between items-start mb-6">
               <div className={`p-3 rounded-2xl ${kpi.iconBg} group-hover:scale-110 transition-transform duration-300`}>
                 <Icon className={`w-6 h-6 ${kpi.color}`} strokeWidth={1.5} />

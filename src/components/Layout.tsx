@@ -1,8 +1,8 @@
 import { ReactNode, useState } from 'react';
-import { 
-  LayoutDashboard, 
-  Truck, 
-  BarChart3, 
+import {
+  LayoutDashboard,
+  Truck,
+  BarChart3,
   LogOut,
   Menu,
   Bell,
@@ -13,7 +13,9 @@ import {
   PackageCheck,
   ChevronLeft,
   ChevronsLeft,
-  ChevronsRight
+  ChevronsRight,
+  FileText,
+  Database
 } from 'lucide-react';
 
 export const Layout = ({ children, activeMenu = 'dashboard', onMenuChange }: { children: ReactNode, activeMenu?: string, onMenuChange?: (id: string) => void }) => {
@@ -23,21 +25,19 @@ export const Layout = ({ children, activeMenu = 'dashboard', onMenuChange }: { c
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'relatorios', label: 'Relatórios', icon: BarChart3 },
     { id: 'viagens', label: 'Viagens', icon: Truck },
-    { id: 'rotas', label: 'Rotas & Destinos', icon: MapPin },
-    { id: 'motoristas', label: 'Motoristas', icon: Users },
-    { id: 'frotas', label: 'Gestão de Frota', icon: PackageCheck },
+    { id: 'resumo', label: 'Resumo', icon: FileText },
+    { id: 'banco_de_dados', label: 'Banco de Dados', icon: Database },
   ];
 
   return (
     <div className="flex h-screen bg-slate-50 font-sans overflow-hidden">
       {/* Sidebar - Premium Dark Theme */}
-      <aside 
-        className={`${
-          isSidebarOpen ? 'w-[260px]' : 'w-[80px]'
-        } bg-[#0A0F1C] text-slate-400 flex flex-col hidden md:flex border-r border-slate-800/60 relative z-20 transition-all duration-300 ease-in-out`}
+      <aside
+        className={`${isSidebarOpen ? 'w-[260px]' : 'w-[80px]'
+          } bg-[#0A0F1C] text-slate-400 flex flex-col hidden md:flex border-r border-slate-800/60 relative z-20 transition-all duration-300 ease-in-out`}
       >
         {/* Toggle Button */}
-        <button 
+        <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           className="absolute -right-3 top-6 w-6 h-6 bg-slate-800 border border-slate-700 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-amber-600 hover:border-amber-500 hover:scale-110 active:scale-95 transition-all duration-200 z-30 shadow-sm"
         >
@@ -52,13 +52,13 @@ export const Layout = ({ children, activeMenu = 'dashboard', onMenuChange }: { c
             </div>
             {isSidebarOpen && (
               <div className="flex flex-col overflow-hidden cursor-pointer group">
-                <span className="text-lg font-display font-bold text-white tracking-tight leading-tight truncate group-hover:text-amber-100 transition-colors">LogisticsPro</span>
-                <span className="text-[10px] font-medium text-amber-400 uppercase tracking-widest truncate group-hover:text-amber-300 transition-colors">Enterprise</span>
+                <span className="text-lg font-display font-bold text-white tracking-tight leading-tight truncate group-hover:text-amber-100 transition-colors">Scamatti Fretes</span>
+                <span className="text-[10px] font-medium text-amber-400 uppercase tracking-widest truncate group-hover:text-amber-300 transition-colors">Análise de Desempenho</span>
               </div>
             )}
           </div>
         </div>
-        
+
         {/* Navigation */}
         <div className="flex-1 overflow-y-auto py-6 px-3 custom-scrollbar">
           {isSidebarOpen && (
@@ -68,17 +68,16 @@ export const Layout = ({ children, activeMenu = 'dashboard', onMenuChange }: { c
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeMenu === item.id;
-              
+
               return (
                 <button
                   key={item.id}
                   onClick={() => onMenuChange && onMenuChange(item.id)}
                   title={!isSidebarOpen ? item.label : undefined}
-                  className={`w-full flex items-center ${isSidebarOpen ? 'justify-between px-3' : 'justify-center px-0'} py-2.5 rounded-xl transition-all duration-200 ease-out group relative ${
-                    isActive 
-                      ? 'bg-amber-500/15 text-amber-300 border border-amber-500/20 shadow-inner' 
+                  className={`w-full flex items-center ${isSidebarOpen ? 'justify-between px-3' : 'justify-center px-0'} py-2.5 rounded-xl transition-all duration-200 ease-out group relative ${isActive
+                      ? 'bg-amber-500/15 text-amber-300 border border-amber-500/20 shadow-inner'
                       : 'hover:bg-slate-800/50 hover:text-slate-200 text-slate-400 hover:translate-x-1'
-                  }`}
+                    }`}
                 >
                   <div className={`flex items-center ${isSidebarOpen ? 'gap-3' : 'justify-center'}`}>
                     <Icon className={`w-5 h-5 transition-colors duration-200 ${isActive ? 'text-amber-400' : 'text-slate-500 group-hover:text-amber-300'}`} />
@@ -115,8 +114,8 @@ export const Layout = ({ children, activeMenu = 'dashboard', onMenuChange }: { c
                 </div>
               )}
             </div>
-            
-            <button 
+
+            <button
               className={`p-2 hover:bg-red-500/10 hover:text-red-400 text-slate-500 rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 group ${!isSidebarOpen ? 'w-full flex justify-center' : ''}`}
               title="Sair"
             >
@@ -141,7 +140,7 @@ export const Layout = ({ children, activeMenu = 'dashboard', onMenuChange }: { c
               <span className="text-lg font-display font-bold text-slate-800 tracking-tight">LogisticsPro</span>
             </div>
           </div>
-          
+
           <div className="hidden md:flex items-center relative w-[400px] group">
             {/* Search bar removed as requested */}
           </div>

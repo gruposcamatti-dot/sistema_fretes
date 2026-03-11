@@ -1,12 +1,13 @@
+import React from 'react';
 import { FreightRecord, SEGMENTS } from '@/src/types';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
   ResponsiveContainer,
   PieChart,
   Pie,
@@ -17,9 +18,18 @@ type DashboardChartsProps = {
   data: FreightRecord[];
 };
 
-// Professional SaaS color palette (Amber/Gold theme)
-const COLORS = ['#d97706', '#f59e0b', '#fbbf24', '#eab308', '#ca8a04', '#b45309'];
-const CHART_BG = '#ffffff';
+// Professional SaaS color palette (Varied colors theme)
+const COLORS = [
+  '#3b82f6', // Blue
+  '#10b981', // Emerald
+  '#f59e0b', // Amber
+  '#ef4444', // Red
+  '#8b5cf6', // Violet
+  '#ec4899', // Pink
+  '#0ea5e9', // Sky
+  '#14b8a6', // Teal
+];
+const CHART_BG = '#f8fafc';
 const GRID_COLOR = '#f1f5f9';
 const TEXT_COLOR = '#64748b';
 
@@ -104,7 +114,7 @@ export const DashboardCharts = ({ data }: DashboardChartsProps) => {
   };
 
   const ChartCard = ({ title, children }: { title: string, children: React.ReactNode }) => (
-    <div className="bg-white p-6 rounded-2xl shadow-md border border-white flex flex-col">
+    <div className="bg-slate-50/50 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col hover:shadow-md hover:border-slate-200 hover:bg-white transition-all duration-300">
       <h3 className="text-xs font-display font-bold text-slate-700 uppercase tracking-widest mb-6">{title}</h3>
       <div className="flex-1 min-h-[300px] h-[300px] w-full">
         {children}
@@ -119,10 +129,10 @@ export const DashboardCharts = ({ data }: DashboardChartsProps) => {
           <BarChart data={barData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={GRID_COLOR} />
             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: TEXT_COLOR, fontSize: 12 }} dy={10} />
-            <YAxis 
-              tickFormatter={(value) => `R$${(value / 1000)}k`} 
-              axisLine={false} 
-              tickLine={false} 
+            <YAxis
+              tickFormatter={(value) => `R$${(value / 1000)}k`}
+              axisLine={false}
+              tickLine={false}
               tick={{ fill: TEXT_COLOR, fontSize: 12 }}
             />
             <Tooltip content={<CustomTooltip formatter={(value: number) => formatCurrency(value)} />} cursor={{ fill: '#f8fafc' }} />
