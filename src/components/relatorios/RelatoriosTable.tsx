@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
 import { FrotaSummary } from '@/src/hooks/useRelatoriosData';
 import { formatTimeFromMinutes } from '@/src/hooks/useRelatoriosData';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 type RelatoriosTableProps = {
   data: FrotaSummary[];

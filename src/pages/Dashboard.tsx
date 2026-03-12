@@ -168,7 +168,7 @@ export const DashboardPage = () => {
         ) : activeMenu === 'rastreamento' ? (
             <RastreamentoView />
         ) : activeMenu === 'relatorios' ? (
-            <RelatóriosView />
+            <RelatoriosView />
         ) : trigger === 0 ? (
           <div className="bg-white border border-white p-12 rounded-2xl flex flex-col items-center justify-center text-center shadow-md h-64">
             <div className="w-16 h-16 bg-amber-50/50 border border-amber-100/50 rounded-full flex items-center justify-center mb-4">

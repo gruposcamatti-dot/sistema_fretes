@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FilterState, SEGMENTS, ORIGIN_MAP } from '@/src/types';
-import { Calendar, MapPin, Filter, Play } from 'lucide-react';
+import { Filter, Play } from 'lucide-react';
 import { getSegmentByOrigin } from '@/src/utils/originNormalizer';
 
 type RelatoriosFiltersProps = {

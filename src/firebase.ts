@@ -4,12 +4,12 @@ import { getFirestore } from 'firebase/firestore';
 
 // As variáveis de ambiente devem ser configuradas no seu arquivo .env ou .env.local
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyBbGpQ0eH-NHHGaEHfzzToBn68t9-GEz_U",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "analise-fretes-ea521.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "analise-fretes-ea521",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "analise-fretes-ea521.firebasestorage.app",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "302325896758",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:302325896758:web:ae6c9cad1f99012547ea97"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 // Diagnóstico simples para produção (não exibe chaves completas)
