@@ -96,7 +96,7 @@ export const RelatóriosCharts = ({ unidadeSummary, frotaSummary, unidadeTimeSum
       {/* Gráfico 2: Top 5 Frotas com maior diferença de km */}
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all hover:shadow-md">
         <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-          <span>🚛</span> Top 5 Frotas - KM Diferença
+          <span>🚛</span> Top 5 Frotas - KM Ganho
         </h3>
         {topFrotas.length > 0 ? (
           <ResponsiveContainer width="100%" height={300}>

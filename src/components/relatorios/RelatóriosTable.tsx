@@ -34,7 +34,7 @@ export const RelatóriosTable = ({ data }: RelatóriosTableProps) => {
               <th className="px-4 py-3 text-right font-semibold text-slate-700">Tempo Viagem</th>
               <th className="px-4 py-3 text-right font-semibold text-slate-700">Tempo Desc.</th>
               <th className="px-4 py-3 text-right font-semibold text-slate-700">KM Rodado</th>
-              <th className="px-4 py-3 text-right font-semibold text-slate-700">KM Diferença</th>
+              <th className="px-4 py-3 text-right font-semibold text-slate-700">KM Ganho</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200">

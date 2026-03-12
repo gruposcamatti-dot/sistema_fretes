@@ -110,7 +110,7 @@ export const RelatóriosView = () => {
               <div className="w-2 h-2 rounded-full bg-blue-400"></div> Tempos Médios
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-amber-400"></div> KM Diferença
+              <div className="w-2 h-2 rounded-full bg-amber-400"></div> KM Ganho
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-emerald-400"></div> Resumo Frota

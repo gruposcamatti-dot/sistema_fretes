@@ -59,7 +59,7 @@ export const RastreamentoView = () => {
         try {
           const parsedData = results.data.map((row: any) => {
             // Conversão resiliente baseada no nome esperado das colunas do CSV
-            // O usuário deve fornecer: Data, Frota, NF, Pedido, Tempo Descarregamento, Tempo Viagem, KM Rodado, Km Diferença
+            // O usuário deve fornecer: Data, Frota, NF, Pedido, Tempo Descarregamento, Tempo Viagem, KM Rodado, Km Ganho
 
             // Helper function to find a key matching roughly the column name ignoring case and spaces
             const findValue = (keywords: string[]) => {
@@ -68,7 +68,7 @@ export const RastreamentoView = () => {
             };
 
             const rawKmRodado = findValue(['km rodado', 'quilometragem'])?.toString().replace(/[^0-9,-]/g, '').replace(',', '.') || '0';
-            const rawKmDif = findValue(['km diferença', 'diferença', 'diferenca'])?.toString().replace(/[^0-9,-]/g, '').replace(',', '.') || '0';
+            const rawKmDif = findValue(['km ganho', 'ganho', 'km diferença', 'diferença', 'diferenca'])?.toString().replace(/[^0-9,-]/g, '').replace(',', '.') || '0';
             const rawDate = findValue(['data', 'emissao', 'emissão']) || '';
             let normalizedDate = rawDate;
             

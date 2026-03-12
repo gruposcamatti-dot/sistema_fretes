@@ -179,7 +179,7 @@ export const RastreamentoEditModal = ({ isOpen, onClose, record, onSuccess }: Ra
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Km Diferença</label>
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Km Ganho</label>
                 <input
                   type="number"
                   step="0.1"

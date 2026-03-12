@@ -34,7 +34,7 @@ export const RelatóriosKPIs = ({ kpis }: RelatóriosKPIsProps) => {
       gradient: 'from-emerald-50/80 to-white',
     },
     {
-      title: 'Total Km Diferença',
+      title: 'Total Km Ganho',
       value: kpis.totalKmDiferenca.toLocaleString('pt-BR', { maximumFractionDigits: 1 }),
       icon: AlertCircle,
       accent: 'bg-amber-500',
@@ -86,7 +86,7 @@ export const RelatóriosKPIs = ({ kpis }: RelatóriosKPIsProps) => {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-5 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {cards.map((card, index) => {
         const Icon = card.icon;
         return (
