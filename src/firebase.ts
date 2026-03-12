@@ -12,6 +12,13 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
+// Diagnóstico simples para produção (não exibe chaves completas)
+if (!firebaseConfig.apiKey) {
+  console.error("ERRO CRÍTICO: VITE_FIREBASE_API_KEY não encontrada nas variáveis de ambiente!");
+} else {
+  console.log("Firebase Config detectada para o projeto:", firebaseConfig.projectId);
+}
+
 // Inicializa o Firebase
 const app = initializeApp(firebaseConfig);
 

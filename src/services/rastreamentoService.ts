@@ -10,6 +10,10 @@ export const rastreamentoService = {
   getRastreamentos: async (filters?: FilterState): Promise<RastreamentoRecord[]> => {
     try {
       const rastreamentoCol = collection(db, COLLECTION_NAME);
+      
+      // Diagnóstico de conexão
+      console.log(`Buscando rastreamentos na coleção: ${COLLECTION_NAME}`);
+      
       const constraints: any[] = [orderBy('data', 'desc'), limit(5000)];
 
       if (filters) {
@@ -31,16 +35,38 @@ export const rastreamentoService = {
         }
       }
 
-      const q = query(rastreamentoCol, ...constraints);
-      const snapshot = await getDocs(q);
+      let q = query(rastreamentoCol, ...constraints);
+      let snapshot = await getDocs(q);
       
+      // Se não retornar nada e houver filtros/orderBy, tentamos uma busca simples como fallback diagnóstico
+      if (snapshot.empty && constraints.length > 0) {
+        console.warn("Nenhum dado encontrado com filtros. Tentando busca simplificada sem filtros/ordenação...");
+        const simpleQuery = query(rastreamentoCol, limit(100));
+        const simpleSnapshot = await getDocs(simpleQuery);
+        
+        if (!simpleSnapshot.empty) {
+          console.log(`Busca simplificada encontrou ${simpleSnapshot.size} registros. O problema pode ser nos índices ou nos filtros aplicados.`);
+          // Em modo diagnóstico, se a busca simples retornar algo mas a filtrada não, 
+          // poderíamos retornar os dados simples, mas vamos manter o fluxo original e apenas logar.
+        } else {
+          console.log("Busca simplificada também não retornou nada. A coleção pode estar realmente vazia para este projeto Firebase.");
+        }
+      }
+
+      console.log(`Busca finalizada. Total de documentos: ${snapshot.size}`);
+
       return snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as RastreamentoRecord[];
     } catch (error: any) {
       console.error("Erro detalhado ao buscar rastreamentos:", error);
-      // Propagar o erro para que a UI possa exibir
+      
+      // Checar erros comuns de índice do Firebase
+      if (error.message?.includes('index')) {
+        throw new Error(`O Firebase precisa de um índice para esta busca. Por favor, clique no link que deve aparecer no console do navegador para criá-lo.`);
+      }
+      
       throw new Error(`Falha ao carregar dados do Firebase: ${error.message || 'Erro desconhecido'}`);
     }
   },

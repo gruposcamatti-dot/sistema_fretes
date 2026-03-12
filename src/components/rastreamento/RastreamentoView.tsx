@@ -43,6 +43,29 @@ export const RastreamentoView = () => {
     loadData();
   };
 
+  const loadAllDiagnostics = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      // Busca sem filtros para diagnóstico
+      const records = await rastreamentoService.getRastreamentos({
+        periodo: '',
+        ano: '',
+        segmento: '',
+        unidade: '',
+        tipo_frete: ''
+      });
+      setData(records);
+      if (records.length === 0) {
+        setError("O banco retornou 0 registros mesmo sem filtros. Verifique o console do navegador e o console do Firebase.");
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -181,6 +204,43 @@ export const RastreamentoView = () => {
         <div className="flex flex-col items-center justify-center h-64 bg-slate-50 border border-slate-200 border-dashed rounded-2xl">
           <Loader2 className="w-8 h-8 animate-spin text-amber-500 mb-4" />
           <p className="text-slate-500 font-medium">Carregando registros de rastreamento...</p>
+        </div>
+      ) : data.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-64 bg-slate-50 border border-slate-200 border-dashed rounded-2xl p-8 text-center">
+          <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+            <MapPin className="w-6 h-6 text-slate-300" />
+          </div>
+          <p className="text-slate-600 font-semibold">Nenhum dado de rastreamento encontrado.</p>
+          <p className="text-slate-400 text-sm mt-1 mb-6 max-w-sm">
+            Verifique se os filtros aplicados estão corretos para o período selecionado ou se o projeto Firebase está configurado adequadamente.
+          </p>
+          
+          {/* Diagnostic Box - Only helpful for debugging production */}
+          <div className="mt-4 p-4 bg-white border border-slate-200 rounded-xl text-left w-full max-w-md shadow-sm">
+            <h5 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Painel de Diagnóstico</h5>
+            <div className="space-y-1.5">
+              <div className="flex justify-between text-[11px]">
+                <span className="text-slate-500 font-medium">Ambiente:</span>
+                <span className="text-slate-700 font-bold">{import.meta.env.MODE === 'production' ? 'PRODUÇÃO' : 'DESENVOLVIMENTO'}</span>
+              </div>
+              <div className="flex justify-between text-[11px]">
+                <span className="text-slate-500 font-medium">ID do Projeto:</span>
+                <span className="text-slate-700 font-bold">{import.meta.env.VITE_FIREBASE_PROJECT_ID || 'NÃO DEFINIDO'}</span>
+              </div>
+              <div className="flex justify-between text-[11px]">
+                <span className="text-slate-500 font-medium">API Key Status:</span>
+                <span className={`font-bold ${import.meta.env.VITE_FIREBASE_API_KEY ? 'text-emerald-600' : 'text-red-500'}`}>
+                  {import.meta.env.VITE_FIREBASE_API_KEY ? 'CONFIGURADA' : 'AUSENTE'}
+                </span>
+              </div>
+            </div>
+            <button 
+              onClick={loadAllDiagnostics}
+              className="mt-3 w-full py-2 bg-slate-900 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-colors"
+            >
+              Forçar Recarregamento Total
+            </button>
+          </div>
         </div>
       ) : (
         <RastreamentoTable data={data} onRefresh={loadData} />

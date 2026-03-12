@@ -56,9 +56,9 @@ export const RelatoriosView = () => {
 
           {/* Charts */}
           {(unidadeSummary.length > 0 || frotaSummary.length > 0 || unidadeTimeSummary.length > 0) && (
-            <RelatoriosCharts 
-              unidadeSummary={unidadeSummary} 
-              frotaSummary={frotaSummary} 
+            <RelatoriosCharts
+              unidadeSummary={unidadeSummary}
+              frotaSummary={frotaSummary}
               unidadeTimeSummary={unidadeTimeSummary}
             />
           )}
@@ -93,18 +93,18 @@ export const RelatoriosView = () => {
       {trigger === 0 && !loading && (
         <div className="relative overflow-hidden p-12 bg-white border border-slate-200 rounded-3xl flex flex-col items-center justify-center text-center shadow-sm min-h-[400px]">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600"></div>
-          
+
           <div className="w-24 h-24 bg-amber-50 rounded-3xl flex items-center justify-center mb-6 rotate-3 shadow-inner">
             <span className="text-5xl">📊</span>
           </div>
-          
+
           <h3 className="text-2xl font-black text-slate-800 mb-3 tracking-tight">
             Gere um Relatório Customizado
           </h3>
           <p className="text-slate-500 max-w-md text-lg leading-relaxed">
             Selecione os filtros acima e clique no botão <span className="text-amber-600 font-bold">"Gerar Relatório"</span> para visualizar os indicadores de performance da sua operação.
           </p>
-          
+
           <div className="mt-10 flex gap-4 text-xs font-bold text-slate-400 uppercase tracking-widest">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-blue-400"></div> Tempos Médios
