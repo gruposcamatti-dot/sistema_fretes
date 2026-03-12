@@ -7,7 +7,7 @@ import { db } from '@/src/firebase';
 
 export type MergedRecord = FreightRecord & RastreamentoRecord;
 
-export const relatóriosService = {
+export const relatoriosService = {
   // Buscar dados cruzados de Viagens e Rastreamento
   getMergedData: async (filters: FilterState): Promise<MergedRecord[]> => {
     try {

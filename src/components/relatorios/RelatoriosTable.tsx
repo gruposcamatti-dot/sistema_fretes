@@ -3,11 +3,11 @@ import { FrotaSummary } from '@/src/hooks/useRelatoriosData';
 import { formatTimeFromMinutes } from '@/src/hooks/useRelatoriosData';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-type RelatóriosTableProps = {
+type RelatoriosTableProps = {
   data: FrotaSummary[];
 };
 
-export const RelatóriosTable = ({ data }: RelatóriosTableProps) => {
+export const RelatoriosTable = ({ data }: RelatoriosTableProps) => {
   const formatNumber = (val: number) => val.toLocaleString('pt-BR', { maximumFractionDigits: 2 });
 
   // Determinar unidade de medida baseada no segmento predominante ou no primeiro registro

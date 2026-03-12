@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FilterState } from '@/src/types';
-import { relatóriosService, MergedRecord } from '@/src/services/relatóriosService';
+import { relatoriosService, MergedRecord } from '@/src/services/relatoriosService';
 import { frotasService } from '@/src/services/frotasService';
 import { getSegmentByOrigin } from '@/src/utils/originNormalizer';
 
@@ -69,7 +69,7 @@ export const useRelatoriosData = (filters: FilterState, trigger: number) => {
 
       try {
         const [mergedData, frotasDB] = await Promise.all([
-          relatóriosService.getMergedData(filters),
+          relatoriosService.getMergedData(filters),
           frotasService.getFrotas()
         ]);
 

@@ -10,7 +10,7 @@ import { ResumoTable } from '@/src/components/dashboard/ResumoTable';
 import { RateiosView } from '@/src/components/rateios/RateiosView';
 import { BancoDeDadosView } from '@/src/components/banco-de-dados/BancoDeDadosView';
 import { RastreamentoView } from '@/src/components/rastreamento/RastreamentoView';
-import { RelatóriosView } from '@/src/components/relatorios/RelatóriosView';
+import { RelatoriosView } from '@/src/components/relatorios/RelatoriosView';
 import { useFreightData } from '@/src/hooks/useFreightData';
 import { FilterState } from '@/src/types';
 import { Loader2, RefreshCcw, Download } from 'lucide-react';

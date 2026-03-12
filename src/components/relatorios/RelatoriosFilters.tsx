@@ -3,14 +3,14 @@ import { FilterState, SEGMENTS, ORIGIN_MAP } from '@/src/types';
 import { Calendar, MapPin, Filter, Play } from 'lucide-react';
 import { getSegmentByOrigin } from '@/src/utils/originNormalizer';
 
-type RelatóriosFiltersProps = {
+type RelatoriosFiltersProps = {
   filters: FilterState;
   setFilters: (filters: FilterState) => void;
   onGenerate: () => void;
   loading: boolean;
 };
 
-export const RelatóriosFilters = ({ filters, setFilters, onGenerate, loading }: RelatóriosFiltersProps) => {
+export const RelatoriosFilters = ({ filters, setFilters, onGenerate, loading }: RelatoriosFiltersProps) => {
   const unidades = filters.segmento 
     ? (SEGMENTS[filters.segmento as keyof typeof SEGMENTS] || [])
     : [];

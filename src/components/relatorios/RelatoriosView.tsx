@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { FilterState } from '@/src/types';
 import { useRelatoriosData } from '@/src/hooks/useRelatoriosData';
-import { RelatóriosFilters } from './RelatóriosFilters';
-import { RelatóriosKPIs } from './RelatóriosKPIs';
-import { RelatóriosCharts } from './RelatóriosCharts';
-import { RelatóriosTable } from './RelatóriosTable';
+import { RelatoriosFilters } from './RelatoriosFilters';
+import { RelatoriosKPIs } from './RelatoriosKPIs';
+import { RelatoriosCharts } from './RelatoriosCharts';
+import { RelatoriosTable } from './RelatoriosTable';
 import { Loader2 } from 'lucide-react';
 
-export const RelatóriosView = () => {
+export const RelatoriosView = () => {
   const [filters, setFilters] = useState<FilterState>({
     periodo: '',
     ano: new Date().getFullYear().toString(),
@@ -25,7 +25,7 @@ export const RelatóriosView = () => {
   return (
     <div className="space-y-6">
       {/* Filtros */}
-      <RelatóriosFilters
+      <RelatoriosFilters
         filters={filters}
         setFilters={setFilters}
         onGenerate={handleGenerate}
@@ -52,11 +52,11 @@ export const RelatóriosView = () => {
       {!loading && trigger > 0 && !error && (
         <div className="space-y-6 animate-in fade-in duration-500">
           {/* KPIs Cards */}
-          <RelatóriosKPIs kpis={kpis} />
+          <RelatoriosKPIs kpis={kpis} />
 
           {/* Charts */}
           {(unidadeSummary.length > 0 || frotaSummary.length > 0 || unidadeTimeSummary.length > 0) && (
-            <RelatóriosCharts 
+            <RelatoriosCharts 
               unidadeSummary={unidadeSummary} 
               frotaSummary={frotaSummary} 
               unidadeTimeSummary={unidadeTimeSummary}
@@ -72,7 +72,7 @@ export const RelatóriosView = () => {
                   Dados detalhados das frotas, organizados pela maior diferença de KM
                 </p>
               </div>
-              <RelatóriosTable data={frotaSummary} />
+              <RelatoriosTable data={frotaSummary} />
             </div>
           ) : (
             trigger > 0 && (

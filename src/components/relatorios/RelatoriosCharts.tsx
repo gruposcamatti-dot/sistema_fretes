@@ -3,13 +3,13 @@ import { UnidadeSummary, FrotaSummary, UnidadeTimeSummary } from '@/src/hooks/us
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import { formatTimeFromMinutes } from '@/src/hooks/useRelatoriosData';
 
-type RelatóriosChartsProps = {
+type RelatoriosChartsProps = {
   unidadeSummary: UnidadeSummary[];
   frotaSummary: FrotaSummary[];
   unidadeTimeSummary: UnidadeTimeSummary[];
 };
 
-export const RelatóriosCharts = ({ unidadeSummary, frotaSummary, unidadeTimeSummary }: RelatóriosChartsProps) => {
+export const RelatoriosCharts = ({ unidadeSummary, frotaSummary, unidadeTimeSummary }: RelatoriosChartsProps) => {
   // Top 5 frotas com maior diferença de km
   const topFrotas = frotaSummary.slice(0, 5);
 

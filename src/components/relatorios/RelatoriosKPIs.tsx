@@ -1,13 +1,13 @@
 import React from 'react';
-import { RelatoriosKPIs } from '@/src/hooks/useRelatoriosData';
+import { RelatoriosKPIs as RelatoriosKPIsData } from '@/src/hooks/useRelatoriosData';
 import { formatTimeFromMinutes } from '@/src/hooks/useRelatoriosData';
 import { Clock, Truck, Navigation, AlertCircle, TrendingUp, DollarSign, Package, Route } from 'lucide-react';
 
-type RelatóriosKPIsProps = {
-  kpis: RelatoriosKPIs;
+type RelatoriosKPIsProps = {
+  kpis: RelatoriosKPIsData;
 };
 
-export const RelatóriosKPIs = ({ kpis }: RelatóriosKPIsProps) => {
+export const RelatoriosKPIs = ({ kpis }: RelatoriosKPIsProps) => {
   const cards = [
     {
       title: 'Tempo Médio de Viagem',
