@@ -10,6 +10,7 @@ import { ResumoTable } from '@/src/components/dashboard/ResumoTable';
 import { RateiosView } from '@/src/components/rateios/RateiosView';
 import { BancoDeDadosView } from '@/src/components/banco-de-dados/BancoDeDadosView';
 import { RastreamentoView } from '@/src/components/rastreamento/RastreamentoView';
+import { RelatóriosView } from '@/src/components/relatorios/RelatóriosView';
 import { useFreightData } from '@/src/hooks/useFreightData';
 import { FilterState } from '@/src/types';
 import { Loader2, RefreshCcw, Download } from 'lucide-react';
@@ -37,6 +38,7 @@ export const DashboardPage = () => {
                 activeMenu === 'resumo' ? 'Resumo por Motorista/Frota' :
                 activeMenu === 'rateios' ? 'Rateios' :
                 activeMenu === 'rastreamento' ? 'Rastreamento' :
+                activeMenu === 'relatorios' ? 'Relatórios' :
                 activeMenu === 'banco_de_dados' ? 'Banco de Dados' :
                 activeMenu === 'viagens' ? 'Gestão de Viagens' : 'Relatório';
 
@@ -64,14 +66,16 @@ export const DashboardPage = () => {
           </div>
           <div className="flex items-center gap-3">
 
-            <button
-              onClick={handleExportPDF}
-              disabled={isExporting || activeMenu === 'banco_de_dados' || activeMenu === 'rastreamento'}
-              className="p-2.5 bg-yellow-500 text-slate-900 rounded-xl hover:bg-yellow-600 hover:-translate-y-0.5 hover:shadow-lg active:scale-95 transition-all duration-200 shadow-sm shadow-yellow-500/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
-              title="Exportar Relatório (PDF)"
-            >
-              {isExporting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
-            </button>
+            {activeMenu !== 'rastreamento' && activeMenu !== 'relatorios' && (
+              <button
+                onClick={handleExportPDF}
+                disabled={isExporting || activeMenu === 'banco_de_dados'}
+                className="p-2.5 bg-yellow-500 text-slate-900 rounded-xl hover:bg-yellow-600 hover:-translate-y-0.5 hover:shadow-lg active:scale-95 transition-all duration-200 shadow-sm shadow-yellow-500/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                title="Exportar Relatório (PDF)"
+              >
+                {isExporting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
+              </button>
+            )}
           </div>
         </div>
 
@@ -148,7 +152,7 @@ export const DashboardPage = () => {
             onGenerate={handleGenerate}
             loading={loading}
           />
-        ) : activeMenu !== 'banco_de_dados' && activeMenu !== 'rateios' && activeMenu !== 'rastreamento' ? (
+        ) : activeMenu !== 'banco_de_dados' && activeMenu !== 'rateios' && activeMenu !== 'rastreamento' && activeMenu !== 'relatorios' ? (
           <DashboardFilters
             filters={filters}
             setFilters={setFilters}
@@ -163,6 +167,8 @@ export const DashboardPage = () => {
             <RateiosView />
         ) : activeMenu === 'rastreamento' ? (
             <RastreamentoView />
+        ) : activeMenu === 'relatorios' ? (
+            <RelatóriosView />
         ) : trigger === 0 ? (
           <div className="bg-white border border-white p-12 rounded-2xl flex flex-col items-center justify-center text-center shadow-md h-64">
             <div className="w-16 h-16 bg-amber-50/50 border border-amber-100/50 rounded-full flex items-center justify-center mb-4">

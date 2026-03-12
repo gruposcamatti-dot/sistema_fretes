@@ -1,6 +1,7 @@
 import { collection, query, getDocs, writeBatch, doc, orderBy, limit, where } from 'firebase/firestore';
 import { db } from '../firebase';
 import { RastreamentoRecord, FilterState } from '../types';
+import { normalizeOrigin } from '@/src/utils/originNormalizer';
 
 const COLLECTION_NAME = 'rastreamento';
 
@@ -14,7 +15,8 @@ export const rastreamentoService = {
       // Filtros do Firebase (Igual ao useFreightData)
       if (filters) {
         if (filters.unidade) {
-          q = query(q, where('origem', '==', filters.unidade));
+          const normalizedUnidade = normalizeOrigin(filters.unidade);
+          q = query(q, where('origem', '==', normalizedUnidade));
         }
 
         if (filters.ano && filters.periodo) {
@@ -93,6 +95,7 @@ export const rastreamentoService = {
         const docRef = doc(rastreamentoCol);
         batch.set(docRef, {
           ...record,
+          origem: normalizeOrigin(record.origem),
           created_at: new Date().toISOString()
         });
       });
