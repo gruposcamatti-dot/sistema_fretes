@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { FreightRecord, FilterState } from '@/src/types';
-import { Search, ArrowUpDown, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, ArrowUpDown, Filter, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { motoristasService, Motorista } from '@/src/services/motoristasService';
 
 type ResumoTableProps = {
   data: FreightRecord[];
@@ -9,6 +10,7 @@ type ResumoTableProps = {
 
 type GroupedItem = {
   nome: string;
+  segmento?: string;
   viagens: number;
   volume: number;
   faturamento: number;
@@ -26,6 +28,26 @@ export const ResumoTable = ({ data, filters }: ResumoTableProps) => {
 
   const activeTipo = (filters.frota !== undefined && filters.motorista === undefined) ? 'frota' : 'motorista';
 
+  const [dbMotoristas, setDbMotoristas] = useState<Motorista[]>([]);
+  const [loadingMotoristas, setLoadingMotoristas] = useState(false);
+
+  useEffect(() => {
+    if (activeTipo === 'motorista') {
+      const fetchMotoristas = async () => {
+        try {
+          setLoadingMotoristas(true);
+          const motoristasList = await motoristasService.getMotoristas();
+          setDbMotoristas(motoristasList);
+        } catch (err) {
+          console.error("Erro ao carregar motoristas do banco:", err);
+        } finally {
+          setLoadingMotoristas(false);
+        }
+      };
+      fetchMotoristas();
+    }
+  }, [activeTipo]);
+
   const groupedData = useMemo(() => {
     const map = new Map<string, GroupedItem>();
     
@@ -38,8 +60,20 @@ export const ResumoTable = ({ data, filters }: ResumoTableProps) => {
         existing.volume += (item.volume || 0);
         existing.faturamento += (item.valor || 0);
       } else {
+        // Encontra o segmento no banco do firebase, se aplicavel
+        let segmentoMotorista = '';
+        if (activeTipo === 'motorista' && item.motorista) {
+            const dbMatch = dbMotoristas.find(m => 
+                (m.motorista || '').trim().toLowerCase() === item.motorista.trim().toLowerCase()
+            );
+            if (dbMatch && dbMatch.segmento) {
+                segmentoMotorista = dbMatch.segmento;
+            }
+        }
+
         map.set(key, {
           nome: key,
+          segmento: segmentoMotorista,
           viagens: 1,
           volume: item.volume || 0,
           faturamento: item.valor || 0
@@ -48,7 +82,7 @@ export const ResumoTable = ({ data, filters }: ResumoTableProps) => {
     });
     
     return Array.from(map.values());
-  }, [data, activeTipo]);
+  }, [data, activeTipo, dbMotoristas]);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
@@ -124,7 +158,7 @@ export const ResumoTable = ({ data, filters }: ResumoTableProps) => {
           <thead>
             <tr className="bg-slate-50/80 border-b border-slate-200/60">
               <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider cursor-pointer hover:bg-slate-100/50 hover:text-amber-600 group transition-colors duration-200" onClick={() => requestSort('nome')}>
-                {activeTipo === 'motorista' ? 'Motorista' : 'Frota'} <SortIcon columnKey="nome" />
+                {activeTipo === 'motorista' ? 'Motorista / Segmento' : 'Frota'} <SortIcon columnKey="nome" />
               </th>
               <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider cursor-pointer hover:bg-slate-100/50 hover:text-amber-600 group transition-colors duration-200 text-right" onClick={() => requestSort('viagens')}>
                 Viagens <SortIcon columnKey="viagens" />
@@ -143,11 +177,18 @@ export const ResumoTable = ({ data, filters }: ResumoTableProps) => {
                 <tr key={`${item.nome}-${idx}`} className="hover:bg-slate-50/80 transition-colors duration-200 group">
                   <td className="px-6 py-4 text-sm text-slate-800 font-medium group-hover:text-amber-600 transition-colors">
                     {activeTipo === 'motorista' ? (
-                        <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-600 group-hover:bg-amber-100 group-hover:text-amber-700 transition-colors">
-                            {item.nome.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                        </div>
-                        {item.nome}
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-600 group-hover:bg-amber-100 group-hover:text-amber-700 transition-colors">
+                                {item.nome.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-sm text-slate-800 font-bold group-hover:text-amber-700 transition-colors">{item.nome}</span>
+                                {item.segmento ? (
+                                    <span className="text-xs font-medium text-slate-500 mt-0.5">{item.segmento}</span>
+                                ) : (
+                                    <span className="text-xs font-medium text-slate-400 mt-0.5 italic">Sem segmento</span>
+                                )}
+                            </div>
                         </div>
                     ) : item.nome}
                   </td>

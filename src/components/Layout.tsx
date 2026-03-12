@@ -15,7 +15,8 @@ import {
   ChevronsLeft,
   ChevronsRight,
   FileText,
-  Database
+  Database,
+  Calculator
 } from 'lucide-react';
 
 export const Layout = ({ children, activeMenu = 'dashboard', onMenuChange }: { children: ReactNode, activeMenu?: string, onMenuChange?: (id: string) => void }) => {
@@ -25,12 +26,14 @@ export const Layout = ({ children, activeMenu = 'dashboard', onMenuChange }: { c
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'relatorios', label: 'Relatórios', icon: BarChart3 },
     { id: 'viagens', label: 'Viagens', icon: Truck },
+    { id: 'rastreamento', label: 'Rastreamento', icon: MapPin },
     { id: 'resumo', label: 'Resumo', icon: FileText },
+    { id: 'rateios', label: 'Rateios', icon: Calculator },
     { id: 'banco_de_dados', label: 'Banco de Dados', icon: Database },
   ];
 
   return (
-    <div className="flex h-screen bg-slate-50 font-sans overflow-hidden">
+    <div className="flex h-screen bg-slate-50 font-sans overflow-hidden print:h-auto print:overflow-visible">
       {/* Sidebar - Premium Dark Theme */}
       <aside
         className={`${isSidebarOpen ? 'w-[260px]' : 'w-[80px]'
@@ -126,7 +129,7 @@ export const Layout = ({ children, activeMenu = 'dashboard', onMenuChange }: { c
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden relative bg-slate-50">
+      <main className="flex-1 flex flex-col overflow-hidden relative bg-slate-50 print:overflow-visible print:h-auto print:block">
         {/* Header - Hidden to remove top space as requested */}
         <header className="hidden md:flex h-0 bg-transparent items-center justify-between px-8 sticky top-0 z-10 transition-all duration-300">
           <div className="flex items-center gap-4 md:hidden">
@@ -165,7 +168,7 @@ export const Layout = ({ children, activeMenu = 'dashboard', onMenuChange }: { c
         </div>
 
         {/* Page Content */}
-        <div className="flex-1 overflow-auto px-6 pb-6 pt-6 md:px-8 md:pb-8 md:pt-8">
+        <div className="flex-1 overflow-auto px-6 pb-6 pt-6 md:px-8 md:pb-8 md:pt-8 print:p-0 print:overflow-visible print:block">
           {children}
         </div>
       </main>

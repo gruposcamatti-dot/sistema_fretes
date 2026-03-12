@@ -70,7 +70,7 @@ export const DashboardKPIs = ({ data, filters }: DashboardKPIsProps) => {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 print:grid-cols-2 print:gap-4 print:mb-8 print:break-inside-avoid">
       {kpis.map((kpi, index) => {
         const Icon = kpi.icon;
         return (
@@ -88,7 +88,7 @@ export const DashboardKPIs = ({ data, filters }: DashboardKPIsProps) => {
               <p className="text-2xl md:text-3xl font-display font-bold text-slate-800 tracking-tight">{kpi.value}</p>
             </div>
             {/* Decorative background element */}
-            <div className={`absolute -right-10 -bottom-10 w-40 h-40 rounded-full ${kpi.iconBg} opacity-20 pointer-events-none group-hover:scale-110 transition-transform duration-500`}></div>
+            <div className={`absolute -right-10 -bottom-10 w-40 h-40 rounded-full ${kpi.iconBg} opacity-20 pointer-events-none group-hover:scale-110 transition-transform duration-500 print:hidden`}></div>
           </div>
         );
       })}

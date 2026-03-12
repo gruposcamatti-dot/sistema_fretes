@@ -148,13 +148,23 @@ export const FreightTable = ({ data }: FreightTableProps) => {
                   <td className="px-2 py-3 text-slate-600 group-hover:text-slate-900 transition-colors whitespace-nowrap">
                     <div className="font-medium text-slate-700">{record.frota}</div>
                     <div className="mt-1">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${getBadgeStyle(record.tipo_frete)}`}>
-                        {record.tipo_frete}
-                      </span>
+                      {(!record.motorista || record.motorista.trim() === '') && record.valor === 0 ? (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-50 text-purple-700 ring-1 ring-purple-600/20">
+                          RETIRA
+                        </span>
+                      ) : (
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${getBadgeStyle(record.tipo_frete)}`}>
+                          {record.tipo_frete}
+                        </span>
+                      )}
                     </div>
                   </td>
                   <td className="px-2 py-3 text-slate-600 group-hover:text-slate-900 transition-colors whitespace-normal min-w-[120px] max-w-[160px] leading-tight break-words">
-                    <span className="line-clamp-3 hover:line-clamp-none transition-all">{record.motorista}</span>
+                    {(!record.motorista || record.motorista.trim() === '') && record.valor === 0 ? (
+                      <span className="text-purple-600 font-semibold italic text-[11px] uppercase tracking-wider">Cliente Retira</span>
+                    ) : (
+                      <span className="line-clamp-3 hover:line-clamp-none transition-all">{record.motorista}</span>
+                    )}
                   </td>
                   <td className="px-2 py-3 text-slate-600 group-hover:text-slate-900 transition-colors whitespace-normal min-w-[100px] max-w-[140px] leading-tight break-words">
                     <span className="line-clamp-3 hover:line-clamp-none transition-all">{record.material}</span>

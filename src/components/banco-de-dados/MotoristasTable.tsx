@@ -1,20 +1,32 @@
-import React, { useState } from 'react';
-import { Search, Plus, Filter, Download, MoreVertical, X, Edit2, Trash2 } from 'lucide-react';
-
+import React, { useState, useEffect } from 'react';
+import { Search, Plus, Filter, Download, MoreVertical, X, Edit2, Trash2, Loader2 } from 'lucide-react';
+import { motoristasService, Motorista } from '../../services/motoristasService';
 export const MotoristasTable = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  // Placeholder mock data specific to Motorista
-  const [motoristas, setMotoristas] = useState([
-    { id: '1', motorista: 'João Silva', funcao: 'Motorista de Rodo-trem', segmento: 'Portos' },
-    { id: '2', motorista: 'Pedro Santos', funcao: 'Motorista de Caçamba', segmento: 'Pedreiras' },
-    { id: '3', motorista: 'Marcos Oliveira', funcao: 'Motorista Truck', segmento: 'Concreteiras' },
-    { id: '4', motorista: 'José Souza', funcao: 'Motorista de Bi-trem', segmento: 'Fábrica de Tubos' },
-    { id: '5', motorista: 'Carlos Almeida', funcao: 'Motorista de Rodo-trem', segmento: 'Pedreiras' },
-  ]);
+  const [motoristas, setMotoristas] = useState<Motorista[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    fetchMotoristas();
+  }, []);
+
+  const fetchMotoristas = async () => {
+    try {
+      setIsLoading(true);
+      const data = await motoristasService.getMotoristas();
+      setMotoristas(data);
+    } catch (error) {
+      console.error("Erro ao carregar motoristas:", error);
+      alert("Erro ao carregar dados dos motoristas.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const [formData, setFormData] = useState({
     motorista: '',
@@ -22,17 +34,35 @@ export const MotoristasTable = () => {
     segmento: ''
   });
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm('Tem certeza que deseja excluir este motorista?')) {
-      setMotoristas(motoristas.filter(m => m.id !== id));
-      setSelectedItems(selectedItems.filter(item => item !== id));
+      try {
+        await motoristasService.deleteMotorista(id);
+        setMotoristas(motoristas.filter(m => m.id !== id));
+        setSelectedItems(selectedItems.filter(item => item !== id));
+      } catch (error) {
+        console.error("Erro ao excluir:", error);
+        alert("Não foi possível excluir o motorista.");
+      }
     }
   };
 
-  const handleBatchDelete = () => {
+  const handleBatchDelete = async () => {
     if (window.confirm(`Tem certeza que deseja excluir ${selectedItems.length} motorista(s)?`)) {
-      setMotoristas(motoristas.filter(m => !selectedItems.includes(m.id)));
-      setSelectedItems([]);
+      try {
+        // Fallback to loop delete for now if we don't implement full batch delete in service
+        setIsLoading(true);
+        for (const id of selectedItems) {
+            await motoristasService.deleteMotorista(id);
+        }
+        setMotoristas(motoristas.filter(m => !selectedItems.includes(m.id!)));
+        setSelectedItems([]);
+      } catch (error) {
+        console.error("Erro ao excluir em lote:", error);
+        alert("Ocorreu um erro ao excluir alguns motoristas.");
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -65,28 +95,22 @@ export const MotoristasTable = () => {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const text = e.target?.result as string;
       const lines = text.split('\n').filter(line => line.trim() !== '');
       
-      // Skip header line if present (assuming the first line might be headers, but we can just process all and catch formatting issues)
-      // Usually, CSV uses ; or , as separator. We try to infer or just use ; / ,
-      const newMotoristas: typeof motoristas = [];
+      const newMotoristas: Omit<Motorista, 'id'>[] = [];
       
       lines.forEach((line, index) => {
-        // basic parser: split by comma or semicolon
         const cols = line.split(/[;,]/);
-        // Ex: A (motorista), B (função), C (segmento)
         if (cols.length >= 3) {
           const motorista = cols[0].trim();
           const funcao = cols[1].trim();
           const segmento = cols[2].trim();
 
-          // Skip header row if it literally contains 'motorista'
           if (index === 0 && motorista.toLowerCase() === 'motorista') return;
 
           newMotoristas.push({
-            id: Date.now().toString() + index, // unique ID
             motorista,
             funcao,
             segmento
@@ -95,8 +119,17 @@ export const MotoristasTable = () => {
       });
 
       if (newMotoristas.length > 0) {
-        setMotoristas(prev => [...prev, ...newMotoristas]);
-        alert(`${newMotoristas.length} motorista(s) importado(s) com sucesso!`);
+        try {
+          setIsLoading(true);
+          await motoristasService.batchAddMotoristas(newMotoristas);
+          await fetchMotoristas(); // Refresh list to get new IDs
+          alert(`${newMotoristas.length} motorista(s) importado(s) com sucesso!`);
+        } catch (error) {
+          console.error("Erro ao importar CSV:", error);
+          alert("Ocorreu um erro ao importar os motoristas pro Firebase.");
+        } finally {
+          setIsLoading(false);
+        }
       } else {
         alert("Não foi possível encontrar dados válidos no CSV. Verifique se as colunas estão separadas por vírgula ou ponto e vírgula e se existem três colunas (motorista, função, segmento).");
       }
@@ -116,6 +149,12 @@ export const MotoristasTable = () => {
     if (type.includes('fábrica')) return 'bg-purple-50 text-purple-700 ring-1 ring-purple-600/20';
     return 'bg-slate-50 text-slate-700 ring-1 ring-slate-600/20';
   };
+
+  const filteredMotoristas = motoristas.filter(motorista => 
+    motorista.motorista.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    motorista.funcao.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    motorista.segmento.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden flex flex-col">
@@ -204,14 +243,30 @@ export const MotoristasTable = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {motoristas.map((motorista) => (
-              <tr key={motorista.id} className={`hover:bg-slate-50/80 transition-colors duration-200 group ${selectedItems.includes(motorista.id) ? 'bg-amber-50/50' : ''}`}>
+            {isLoading ? (
+              <tr>
+                <td colSpan={5} className="px-6 py-8 text-center text-slate-500">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <Loader2 className="w-6 h-6 animate-spin text-amber-500" />
+                    <span>Carregando motoristas...</span>
+                  </div>
+                </td>
+              </tr>
+            ) : filteredMotoristas.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="px-6 py-8 text-center text-slate-500">
+                  Nenhum motorista encontrado.
+                </td>
+              </tr>
+            ) : (
+              filteredMotoristas.map((motorista) => (
+              <tr key={motorista.id} className={`hover:bg-slate-50/80 transition-colors duration-200 group ${motorista.id && selectedItems.includes(motorista.id) ? 'bg-amber-50/50' : ''}`}>
                 <td className="px-6 py-4">
                   <input 
                     type="checkbox" 
                     className="rounded border-slate-300 text-amber-500 focus:ring-amber-500 cursor-pointer"
-                    checked={selectedItems.includes(motorista.id)}
-                    onChange={() => toggleSelection(motorista.id)}
+                    checked={motorista.id ? selectedItems.includes(motorista.id) : false}
+                    onChange={() => motorista.id && toggleSelection(motorista.id)}
                   />
                 </td>
                 <td className="px-6 py-4 text-sm text-slate-800 font-bold group-hover:text-amber-600 transition-colors">
@@ -236,14 +291,15 @@ export const MotoristasTable = () => {
                       <Edit2 className="w-4 h-4" />
                     </button>
                     <button 
-                      onClick={() => handleDelete(motorista.id)}
+                      onClick={() => motorista.id && handleDelete(motorista.id)}
                       className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Excluir">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </td>
               </tr>
-            ))}
+            ))
+            )}
           </tbody>
         </table>
       </div>
@@ -310,18 +366,30 @@ export const MotoristasTable = () => {
                 Cancelar
               </button>
               <button 
-                onClick={() => {
-                  if (editingId) {
-                    setMotoristas(motoristas.map(m => m.id === editingId ? { ...m, ...formData } : m));
-                  } else {
-                    setMotoristas([...motoristas, { id: Date.now().toString(), ...formData }]);
+                onClick={async () => {
+                  try {
+                    setIsSaving(true);
+                    if (editingId) {
+                      await motoristasService.updateMotorista(editingId, formData);
+                      setMotoristas(motoristas.map(m => m.id === editingId ? { ...m, ...formData } : m));
+                    } else {
+                      const newId = await motoristasService.addMotorista(formData);
+                      setMotoristas([...motoristas, { id: newId, ...formData }]);
+                    }
+                    setIsModalOpen(false);
+                    setEditingId(null);
+                    setFormData({ motorista: '', funcao: '', segmento: '' });
+                  } catch (error) {
+                    console.error("Erro ao salvar:", error);
+                    alert("Erro ao salvar os dados.");
+                  } finally {
+                    setIsSaving(false);
                   }
-                  setIsModalOpen(false);
-                  setEditingId(null);
-                  setFormData({ motorista: '', funcao: '', segmento: '' });
                 }}
-                className="px-5 py-2.5 text-sm font-semibold text-slate-900 bg-amber-500 rounded-xl hover:bg-amber-600 shadow-sm shadow-amber-500/20 transition-all"
+                disabled={isSaving || !formData.motorista.trim()}
+                className="px-5 py-2.5 text-sm font-semibold text-slate-900 bg-amber-500 rounded-xl hover:bg-amber-600 shadow-sm shadow-amber-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
+                {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
                 {editingId ? 'Salvar Alterações' : 'Salvar Motorista'}
               </button>
             </div>

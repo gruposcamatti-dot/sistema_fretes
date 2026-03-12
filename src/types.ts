@@ -49,6 +49,7 @@ export const ORIGIN_MAP: Record<string, string> = {
   '1': 'Mineração Noroeste Paulista - Monções',
   '12': 'Mineração Grandes Lagos Ltda - Itapura',
   '13': 'Mineração Grandes Lagos Ltda - Riolândia',
+  '15': 'Noromix Concreto S/A - Três Fronteiras',
   '16': 'Mineração Agua Amarela - Riolândia',
   '23': 'Porto de Areia Saara - Mira Estrela',
   '27': 'Mineração Grandes Lagos Ltda - Icém',
@@ -79,4 +80,19 @@ export type FilterState = {
   unidade: string;
   motorista?: string;
   frota?: string;
+  tipo_frete?: string;
+};
+
+export type RastreamentoRecord = {
+  id: string;
+  origem: string;
+  data: string;
+  frota: string;
+  nf: string;
+  pedido: string;
+  tempo_descarregamento: string;
+  tempo_viagem: string;
+  km_rodado: number;
+  km_diferenca: number;
+  created_at?: string;
 };

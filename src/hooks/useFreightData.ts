@@ -52,6 +52,9 @@ export const useFreightData = (filters: FilterState, trigger: number) => {
         if (filters.frota) {
           query = query.eq('FROTA', filters.frota);
         }
+        if (filters.tipo_frete) {
+          query = query.ilike('TIPO FRETE', `%${filters.tipo_frete}%`);
+        }
 
         const { data: result, error: supabaseError } = await query;
 

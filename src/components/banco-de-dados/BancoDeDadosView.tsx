@@ -9,21 +9,8 @@ export const BancoDeDadosView = () => {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
 
-      {/* Intro Header */}
-      <div className="bg-white border border-slate-200/60 p-6 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 bg-amber-50/50 border border-amber-100/50 rounded-full flex flex-shrink-0 items-center justify-center">
-            <Database className="w-7 h-7 text-amber-500" />
-          </div>
-          <div>
-            <h3 className="text-xl font-display font-bold text-slate-800">Gerenciamento de Entidades</h3>
-            <p className="text-slate-500 text-sm max-w-xl">Mantenha os cadastros atualizados para garantir a precisão no cruzamento de dados de viagens, emissão de relatórios e filtros preditivos.</p>
-          </div>
-        </div>
-      </div>
-
       {/* Tabs */}
-      <div className="flex p-1 bg-slate-200/50 rounded-2xl w-full sm:w-fit shadow-inner">
+      <div className="flex p-1 bg-slate-200/50 rounded-2xl w-full sm:w-fit shadow-inner mx-auto mb-6">
         <button
           onClick={() => setActiveTab('frotas')}
           className={`flex items-center justify-center gap-2 flex-1 sm:px-8 py-3 rounded-xl font-semibold text-sm transition-all duration-300 ${activeTab === 'frotas'

@@ -42,7 +42,7 @@ export const ResumoFilters = ({ filters, setFilters, onGenerate, loading }: Resu
     });
   };
 
-  const hasActiveFilters = filters.periodo !== '' || filters.segmento !== '' || filters.unidade !== '' || (filters.motorista && filters.motorista !== '') || (filters.frota && filters.frota !== '');
+  const hasActiveFilters = filters.periodo !== '' || filters.segmento !== '' || filters.unidade !== '' || (filters.motorista && filters.motorista !== '') || (filters.frota && filters.frota !== '') || !!filters.tipo_frete;
 
   return (
     <div className="bg-white p-6 rounded-2xl shadow-md border border-white">
@@ -157,7 +157,23 @@ export const ResumoFilters = ({ filters, setFilters, onGenerate, loading }: Resu
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-end">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-end">
+          {/* Tipo de Frete */}
+          <div className="lg:w-full">
+            <label className="block text-xs font-medium text-slate-500 mb-1.5">Tipo de Frete</label>
+            <select
+              className="w-full bg-slate-100 border-transparent text-slate-700 text-sm rounded-xl px-3 py-3 outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 hover:bg-slate-200/70 transition-all duration-200 cursor-pointer appearance-none"
+              value={filters.tipo_frete || ''}
+              onChange={(e) => setFilters({ ...filters, tipo_frete: e.target.value })}
+              style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem' }}
+            >
+              <option value="">Todos os Tipos</option>
+              <option value="Próprio">Próprio</option>
+              <option value="Fretado">Fretado</option>
+              <option value="Retira">Retira</option>
+            </select>
+          </div>
+
           {/* O Selecionador Dinâmico */}
           <div className="lg:w-full">
             <label className="block text-xs font-medium text-slate-500 mb-1.5">

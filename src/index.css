@@ -28,3 +28,95 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+
+@media print {
+  /* Hide unnecessary elements during print */
+  .no-print, aside, header, nav, button[title="Exportar Relatório (PDF)"] {
+    display: none !important;
+  }
+  
+  /* Reset margins and paddings for the print canvas */
+  body.printing-dashboard {
+    background-color: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  body.printing-dashboard * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Expand max-width layout for A4 */
+  body.printing-dashboard .max-w-7xl {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Force all flex/grid containers holding charts to behave nicely during printing */
+  body.printing-dashboard main,
+  body.printing-dashboard #root,
+  body.printing-dashboard .h-screen,
+  body.printing-dashboard .overflow-y-auto,
+  body.printing-dashboard .flex-1 {
+    display: block !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    position: static !important;
+  }
+
+  body.printing-dashboard .grid {
+    break-inside: avoid;
+  }
+
+  body.printing-dashboard .bg-white {
+    box-shadow: none !important;
+    border: 1px solid #e2e8f0 !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Make sure Recharts don't collapse on print */
+  body.printing-dashboard .recharts-responsive-container {
+    width: 100% !important;
+    height: 300px !important; /* Force explicit physical height since flex collapses */
+    min-width: 500px !important;
+    display: block !important;
+  }
+
+  body.printing-dashboard .recharts-wrapper {
+    width: 100% !important;
+    height: 100% !important;
+    position: relative !important;
+    display: block !important;
+  }
+  
+  body.printing-dashboard svg {
+    max-width: 100% !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* Force grid columns to stack if they can't fit on A4, or maintain grid */
+  body.printing-dashboard .grid-cols-1.lg\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    display: grid !important;
+    gap: 16px !important;
+  }
+
+  /* Ensure card heights are maintained */
+  body.printing-dashboard .h-\[300px\] {
+    height: 300px !important;
+    display: block !important;
+  }
+
+  /* Disable all animations during print so charts draw instantly */
+  body.printing-dashboard * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

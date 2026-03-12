@@ -1,20 +1,32 @@
-import React, { useState } from 'react';
-import { Search, Plus, Filter, ArrowUpDown, Download, MoreVertical, FileText, X, Edit2, Trash2 } from 'lucide-react';
-
+import React, { useState, useEffect } from 'react';
+import { Search, Plus, Filter, ArrowUpDown, Download, MoreVertical, FileText, X, Edit2, Trash2, Loader2 } from 'lucide-react';
+import { frotasService, Frota } from '../../services/frotasService';
 export const FrotasTable = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  // Placeholder mock data specific to Frota
-  const [frotas, setFrotas] = useState([
-    { id: '1', frota: 'FROTA A1', placa: 'ABC-1234', tipo: 'Bi-trem', modelo: 'FH 540', marca: 'Volvo', segmento: 'Portos', unidade: 'Porto de Areia Saara - Mira Estrela' },
-    { id: '2', frota: 'FROTA B2', placa: 'XYZ-9876', tipo: 'Rodo-trem', modelo: 'Actros', marca: 'Mercedes-Benz', segmento: 'Pedreiras', unidade: 'Mineração Noroeste Paulista - Monções' },
-    { id: '3', frota: 'FROTA C3', placa: 'QWE-4567', tipo: 'Caçamba', modelo: 'R450', marca: 'Scania', segmento: 'Concreteiras', unidade: 'Noromix Concreto S/A - Votuporanga' },
-    { id: '4', frota: 'FROTA D4', placa: 'ASD-3210', tipo: 'Truck', modelo: 'Constellation', marca: 'Volkswagen', segmento: 'Fábrica de Tubos', unidade: 'Fábrica de Tubos - Votuporanga' },
-    { id: '5', frota: 'FROTA E5', placa: 'ZXC-6543', tipo: 'Bi-trem', modelo: 'Stralis', marca: 'Iveco', segmento: 'Pedreiras', unidade: 'Mineração Grandes Lagos Ltda - Icém' },
-  ]);
+  const [frotas, setFrotas] = useState<Frota[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    fetchFrotas();
+  }, []);
+
+  const fetchFrotas = async () => {
+    try {
+      setIsLoading(true);
+      const data = await frotasService.getFrotas();
+      setFrotas(data);
+    } catch (error) {
+      console.error("Erro ao carregar frotas:", error);
+      alert("Erro ao carregar dados das frotas.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const [formData, setFormData] = useState({
     frota: '',
@@ -26,17 +38,34 @@ export const FrotasTable = () => {
     unidade: ''
   });
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm('Tem certeza que deseja excluir esta frota?')) {
-      setFrotas(frotas.filter(f => f.id !== id));
-      setSelectedItems(selectedItems.filter(item => item !== id));
+      try {
+        await frotasService.deleteFrota(id);
+        setFrotas(frotas.filter(f => f.id !== id));
+        setSelectedItems(selectedItems.filter(item => item !== id));
+      } catch (error) {
+        console.error("Erro ao excluir:", error);
+        alert("Não foi possível excluir a frota.");
+      }
     }
   };
 
-  const handleBatchDelete = () => {
+  const handleBatchDelete = async () => {
     if (window.confirm(`Tem certeza que deseja excluir ${selectedItems.length} frota(s)?`)) {
-      setFrotas(frotas.filter(f => !selectedItems.includes(f.id)));
-      setSelectedItems([]);
+      try {
+        setIsLoading(true);
+        for (const id of selectedItems) {
+            await frotasService.deleteFrota(id);
+        }
+        setFrotas(frotas.filter(f => !selectedItems.includes(f.id!)));
+        setSelectedItems([]);
+      } catch (error) {
+        console.error("Erro ao excluir em lote:", error);
+        alert("Ocorreu um erro ao excluir algumas frotas.");
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -73,15 +102,14 @@ export const FrotasTable = () => {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const text = e.target?.result as string;
       const lines = text.split('\n').filter(line => line.trim() !== '');
       
-      const newFrotas: typeof frotas = [];
+      const newFrotas: Omit<Frota, 'id'>[] = [];
       
       lines.forEach((line, index) => {
         const cols = line.split(/[;,]/);
-        // Frota, Placa, Tipo, Modelo, Marca, Segmento e Unidade
         if (cols.length >= 7) {
           const frota = cols[0].trim();
           const placa = cols[1].trim();
@@ -91,11 +119,9 @@ export const FrotasTable = () => {
           const segmento = cols[5].trim();
           const unidade = cols[6].trim();
 
-          // Pula o cabeçalho se existir
           if (index === 0 && frota.toLowerCase() === 'frota') return;
 
           newFrotas.push({
-            id: Date.now().toString() + index,
             frota,
             placa,
             tipo,
@@ -108,8 +134,17 @@ export const FrotasTable = () => {
       });
 
       if (newFrotas.length > 0) {
-        setFrotas(prev => [...prev, ...newFrotas]);
-        alert(`${newFrotas.length} frota(s) importada(s) com sucesso!`);
+        try {
+          setIsLoading(true);
+          await frotasService.batchAddFrotas(newFrotas);
+          await fetchFrotas();
+          alert(`${newFrotas.length} frota(s) importada(s) com sucesso!`);
+        } catch (error) {
+          console.error("Erro ao importar CSV:", error);
+          alert("Ocorreu um erro ao importar as frotas pro Firebase.");
+        } finally {
+          setIsLoading(false);
+        }
       } else {
         alert("Não foi possível encontrar dados válidos no CSV. Verifique se as colunas estão separadas por vírgula ou ponto e vírgula e se existem todas as sete colunas.");
       }
@@ -119,6 +154,16 @@ export const FrotasTable = () => {
 
     reader.readAsText(file);
   };
+
+  const filteredFrotas = frotas.filter(frota => 
+    (frota.frota && frota.frota.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (frota.placa && frota.placa.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (frota.tipo && frota.tipo.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (frota.modelo && frota.modelo.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (frota.marca && frota.marca.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (frota.segmento && frota.segmento.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (frota.unidade && frota.unidade.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden flex flex-col">
@@ -211,14 +256,30 @@ export const FrotasTable = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {frotas.map((frota) => (
-              <tr key={frota.id} className={`hover:bg-slate-50/80 transition-colors duration-200 group ${selectedItems.includes(frota.id) ? 'bg-amber-50/50' : ''}`}>
+            {isLoading ? (
+              <tr>
+                <td colSpan={9} className="px-6 py-8 text-center text-slate-500">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <Loader2 className="w-6 h-6 animate-spin text-amber-500" />
+                    <span>Carregando frotas...</span>
+                  </div>
+                </td>
+              </tr>
+            ) : filteredFrotas.length === 0 ? (
+              <tr>
+                <td colSpan={9} className="px-6 py-8 text-center text-slate-500">
+                  Nenhuma frota encontrada.
+                </td>
+              </tr>
+            ) : (
+              filteredFrotas.map((frota) => (
+              <tr key={frota.id} className={`hover:bg-slate-50/80 transition-colors duration-200 group ${frota.id && selectedItems.includes(frota.id) ? 'bg-amber-50/50' : ''}`}>
                 <td className="px-6 py-4">
                   <input 
                     type="checkbox" 
                     className="rounded border-slate-300 text-amber-500 focus:ring-amber-500 cursor-pointer"
-                    checked={selectedItems.includes(frota.id)}
-                    onChange={() => toggleSelection(frota.id)}
+                    checked={frota.id ? selectedItems.includes(frota.id) : false}
+                    onChange={() => frota.id && toggleSelection(frota.id)}
                   />
                 </td>
                 <td className="px-6 py-4 text-sm text-slate-800 font-bold">{frota.frota}</td>
@@ -242,14 +303,15 @@ export const FrotasTable = () => {
                       <Edit2 className="w-4 h-4" />
                     </button>
                     <button 
-                      onClick={() => handleDelete(frota.id)}
+                      onClick={() => frota.id && handleDelete(frota.id)}
                       className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Excluir">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </td>
               </tr>
-            ))}
+            ))
+            )}
           </tbody>
         </table>
       </div>
@@ -358,18 +420,30 @@ export const FrotasTable = () => {
                 Cancelar
               </button>
               <button 
-                onClick={() => {
-                  if (editingId) {
-                    setFrotas(frotas.map(f => f.id === editingId ? { ...f, ...formData } : f));
-                  } else {
-                    setFrotas([...frotas, { id: Date.now().toString(), ...formData }]);
+                onClick={async () => {
+                  try {
+                    setIsSaving(true);
+                    if (editingId) {
+                      await frotasService.updateFrota(editingId, formData);
+                      setFrotas(frotas.map(f => f.id === editingId ? { ...f, ...formData } : f));
+                    } else {
+                      const newId = await frotasService.addFrota(formData);
+                      setFrotas([...frotas, { id: newId, ...formData }]);
+                    }
+                    setIsModalOpen(false);
+                    setEditingId(null);
+                    setFormData({ frota: '', placa: '', tipo: '', modelo: '', marca: '', segmento: '', unidade: '' });
+                  } catch (error) {
+                    console.error("Erro ao salvar:", error);
+                    alert("Erro ao salvar os dados.");
+                  } finally {
+                    setIsSaving(false);
                   }
-                  setIsModalOpen(false);
-                  setEditingId(null);
-                  setFormData({ frota: '', placa: '', tipo: '', modelo: '', marca: '', segmento: '', unidade: '' });
                 }}
-                className="px-5 py-2.5 text-sm font-semibold text-slate-900 bg-amber-500 rounded-xl hover:bg-amber-600 shadow-sm shadow-amber-500/20 transition-all"
+                disabled={isSaving || !formData.frota.trim()}
+                className="px-5 py-2.5 text-sm font-semibold text-slate-900 bg-amber-500 rounded-xl hover:bg-amber-600 shadow-sm shadow-amber-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
+                {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
                 {editingId ? 'Salvar Alterações' : 'Salvar Frota'}
               </button>
             </div>
