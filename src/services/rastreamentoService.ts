@@ -10,13 +10,12 @@ export const rastreamentoService = {
   getRastreamentos: async (filters?: FilterState): Promise<RastreamentoRecord[]> => {
     try {
       const rastreamentoCol = collection(db, COLLECTION_NAME);
-      let q = query(rastreamentoCol, orderBy('data', 'desc'), limit(5000));
+      const constraints: any[] = [orderBy('data', 'desc'), limit(5000)];
 
-      // Filtros do Firebase (Igual ao useFreightData)
       if (filters) {
         if (filters.unidade) {
           const normalizedUnidade = normalizeOrigin(filters.unidade);
-          q = query(q, where('origem', '==', normalizedUnidade));
+          constraints.push(where('origem', '==', normalizedUnidade));
         }
 
         if (filters.ano && filters.periodo) {
@@ -24,20 +23,25 @@ export const rastreamentoService = {
           const startDate = `${filters.ano}-${month}-01`;
           const lastDay = new Date(parseInt(filters.ano), parseInt(month), 0).getDate();
           const endDate = `${filters.ano}-${month}-${lastDay}`;
-          q = query(q, where('data', '>=', startDate), where('data', '<=', endDate));
+          constraints.push(where('data', '>=', startDate));
+          constraints.push(where('data', '<=', endDate));
         } else if (filters.ano) {
-          q = query(q, where('data', '>=', `${filters.ano}-01-01`), where('data', '<=', `${filters.ano}-12-31`));
+          constraints.push(where('data', '>=', `${filters.ano}-01-01`));
+          constraints.push(where('data', '<=', `${filters.ano}-12-31`));
         }
       }
 
+      const q = query(rastreamentoCol, ...constraints);
       const snapshot = await getDocs(q);
+      
       return snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as RastreamentoRecord[];
-    } catch (error) {
-      console.error("Erro ao buscar rastreamentos:", error);
-      return [];
+    } catch (error: any) {
+      console.error("Erro detalhado ao buscar rastreamentos:", error);
+      // Propagar o erro para que a UI possa exibir
+      throw new Error(`Falha ao carregar dados do Firebase: ${error.message || 'Erro desconhecido'}`);
     }
   },
 

@@ -9,6 +9,7 @@ import { Upload, MapPin, Loader2, FileCheck, AlertTriangle } from 'lucide-react'
 export const RastreamentoView = () => {
   const [data, setData] = useState<RastreamentoRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<{ type: 'idle' | 'success' | 'error', message: string }>({ type: 'idle', message: '' });
   const [filters, setFilters] = useState<FilterState>({
@@ -22,11 +23,13 @@ export const RastreamentoView = () => {
 
   const loadData = async () => {
     setIsLoading(true);
+    setError(null);
     try {
       const records = await rastreamentoService.getRastreamentos(filters);
       setData(records);
-    } catch (error) {
-      console.error('Falha ao carregar registros', error);
+    } catch (err: any) {
+      console.error('Falha ao carregar registros', err);
+      setError(err.message || 'Erro ao conectar com o banco de dados.');
     } finally {
       setIsLoading(false);
     }
@@ -146,6 +149,22 @@ export const RastreamentoView = () => {
           <div>
             <h4 className="font-semibold text-sm">{uploadStatus.type === 'success' ? 'Sucesso!' : 'Ocorreu um erro'}</h4>
             <p className="text-sm opacity-90">{uploadStatus.message}</p>
+          </div>
+        </div>
+      )}
+
+      {error && (
+        <div className="p-4 rounded-xl flex items-start gap-3 border bg-red-50 border-red-200 text-red-800 animate-in fade-in slide-in-from-top-2 duration-300">
+          <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+          <div>
+            <h4 className="font-semibold text-sm">Erro ao carregar dados</h4>
+            <p className="text-sm opacity-90">{error}</p>
+            <button 
+              onClick={loadData}
+              className="mt-2 text-xs font-bold underline hover:no-underline"
+            >
+              Tentar novamente
+            </button>
           </div>
         </div>
       )}
