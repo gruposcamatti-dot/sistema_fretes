@@ -52,7 +52,7 @@ export const RelatoriosView = () => {
       {!loading && trigger > 0 && !error && (
         <div className="space-y-6 animate-in fade-in duration-500">
           {/* KPIs Cards */}
-          <RelatoriosKPIs kpis={kpis} />
+          <RelatoriosKPIs kpis={kpis} segment={filters.segmento} />
 
           {/* Charts */}
           {(unidadeSummary.length > 0 || frotaSummary.length > 0 || unidadeTimeSummary.length > 0) && (

@@ -29,7 +29,7 @@ export const RelatoriosTable = ({ data }: RelatoriosTableProps) => {
               <th className="px-4 py-3 text-left font-semibold text-slate-700">Tipo</th>
               <th className="px-4 py-3 text-left font-semibold text-slate-700">Segmento</th>
               <th className="px-4 py-3 text-left font-semibold text-slate-700">Origem</th>
-               <th className="px-4 py-3 text-right font-semibold text-slate-700">Viagens</th>
+              <th className="px-4 py-3 text-right font-semibold text-slate-700">Viagens</th>
               <th className="px-4 py-3 text-right font-semibold text-slate-700">Volume {volumeUnit}</th>
               <th className="px-4 py-3 text-right font-semibold text-slate-700">Tempo Viagem</th>
               <th className="px-4 py-3 text-right font-semibold text-slate-700">Tempo Desc.</th>

@@ -5,9 +5,17 @@ import { Clock, Truck, Navigation, AlertCircle, TrendingUp, DollarSign, Package,
 
 type RelatoriosKPIsProps = {
   kpis: RelatoriosKPIsData;
+  segment?: string;
 };
 
-export const RelatoriosKPIs = ({ kpis }: RelatoriosKPIsProps) => {
+export const RelatoriosKPIs = ({ kpis, segment }: RelatoriosKPIsProps) => {
+  const getVolumeUnit = () => {
+    if (segment === 'PEDREIRAS' || segment === 'PORTOS') return 'ton.';
+    return 'm³';
+  };
+
+  const volumeUnit = getVolumeUnit();
+
   const cards = [
     {
       title: 'Tempo Médio de Viagem',
@@ -77,7 +85,7 @@ export const RelatoriosKPIs = ({ kpis }: RelatoriosKPIsProps) => {
     },
     {
       title: 'Volume / Viagem',
-      value: `${kpis.volumePorViagem.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} t`,
+      value: `${kpis.volumePorViagem.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} ${volumeUnit}`,
       icon: Package,
       accent: 'bg-violet-500',
       iconBg: 'bg-violet-50 text-violet-600',
@@ -94,7 +102,7 @@ export const RelatoriosKPIs = ({ kpis }: RelatoriosKPIsProps) => {
             key={index}
             className={`group relative p-6 rounded-3xl border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:-translate-y-1.5 duration-500 overflow-hidden bg-gradient-to-br ${card.gradient}`}
           >
-            {/* Subtle side accent bar - Force height and width to ensure visibility */}
+            {/* Subtle side accent bar */}
             <div className={`absolute left-0 top-0 bottom-0 w-[4px] ${card.accent} opacity-60 group-hover:opacity-100 transition-opacity duration-500`}></div>
             
             <div className="flex flex-col space-y-4">
