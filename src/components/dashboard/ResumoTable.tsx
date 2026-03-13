@@ -52,7 +52,10 @@ export const ResumoTable = ({ data, filters }: ResumoTableProps) => {
     const map = new Map<string, GroupedItem>();
     
     data.forEach(item => {
-      const key = activeTipo === 'motorista' ? (item.motorista || 'Sem Motorista') : (item.frota || 'Sem Frota');
+      const isRetira = (!item.motorista || item.motorista.trim() === '') && item.valor === 0;
+      const key = activeTipo === 'motorista' 
+        ? (item.motorista && item.motorista.trim() !== '' ? item.motorista : (isRetira ? 'Cliente Retira' : 'Sem Motorista')) 
+        : (item.frota || 'Sem Frota');
       
       const existing = map.get(key);
       if (existing) {

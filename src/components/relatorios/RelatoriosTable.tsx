@@ -71,7 +71,9 @@ export const RelatoriosTable = ({ data }: RelatoriosTableProps) => {
                     {formatNumber(frota.totalKmRodado)}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <span className="bg-amber-100 text-amber-900 px-2 py-1 rounded font-semibold">
+                    <span className={`px-2 py-1 rounded font-semibold ${frota.totalKmDiferenca < 0 
+                      ? 'bg-red-50 text-red-700' 
+                      : 'bg-amber-100 text-amber-900'}`}>
                       {formatNumber(frota.totalKmDiferenca)}
                     </span>
                   </td>

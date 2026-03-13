@@ -193,17 +193,8 @@ export const DashboardPage = () => {
         ) : (
           <div className="space-y-6 animate-in fade-in duration-500 print:space-y-4 print:block">
             {data.length === 0 && (
-              <div className="bg-amber-50 border border-amber-100 text-amber-800 p-6 rounded-2xl text-sm overflow-auto shadow-sm">
-                <p className="font-display font-bold text-base mb-2">Nenhum dado encontrado no banco de dados.</p>
-                <p className="mb-4">Filtros ativos: Ano: {filters.ano || 'Todos'}, Mês: {filters.periodo || 'Todos'}, Segmento: {filters.segmento || 'Todos'}, Unidade: {filters.unidade || 'Todas'}</p>
-                <div className="space-y-2 text-xs bg-white/60 border border-amber-100 p-4 rounded-2xl">
-                  <p className="font-semibold text-amber-900">Possíveis causas:</p>
-                  <ul className="list-disc pl-5 space-y-1.5 text-amber-800">
-                    <li><strong>Tabela vazia:</strong> A tabela <code className="bg-amber-100/50 px-1.5 py-0.5 rounded font-mono">frete_geral</code> não possui nenhum registro.</li>
-                    <li><strong>RLS (Row Level Security) ativado:</strong> O Supabase bloqueia a leitura de dados por padrão. Vá no painel do Supabase &gt; Authentication &gt; Policies e crie uma política permitindo leitura (SELECT) para a tabela <code className="bg-amber-100/50 px-1.5 py-0.5 rounded font-mono">frete_geral</code>.</li>
-                    <li><strong>Nome da tabela incorreto:</strong> Verifique se a tabela no Supabase se chama exatamente <code className="bg-amber-100/50 px-1.5 py-0.5 rounded font-mono">frete_geral</code> (tudo minúsculo).</li>
-                  </ul>
-                </div>
+              <div className="bg-amber-50 border border-amber-100 text-amber-800 p-6 rounded-2xl text-center shadow-sm">
+                <p className="font-display font-bold text-lg">Nenhum dado encontrado no banco de dados.</p>
               </div>
             )}
 

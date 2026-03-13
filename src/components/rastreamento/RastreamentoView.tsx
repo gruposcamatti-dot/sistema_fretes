@@ -8,7 +8,8 @@ import { Upload, MapPin, Loader2, FileCheck, AlertTriangle } from 'lucide-react'
 
 export const RastreamentoView = () => {
   const [data, setData] = useState<RastreamentoRecord[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasGenerated, setHasGenerated] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<{ type: 'idle' | 'success' | 'error', message: string }>({ type: 'idle', message: '' });
@@ -36,10 +37,11 @@ export const RastreamentoView = () => {
   };
 
   useEffect(() => {
-    loadData();
-  }, []); // Carga inicial
+    // Não carrega nada no início, aguarda o clique em Gerar
+  }, []); // Carga inicial removida
 
   const handleGenerate = () => {
+    setHasGenerated(true);
     loadData();
   };
 
@@ -199,8 +201,15 @@ export const RastreamentoView = () => {
         loading={isLoading}
       />
 
-      {/* Conteúdo */}
-      {isLoading ? (
+      {!hasGenerated ? (
+        <div className="bg-white border border-white p-12 rounded-2xl flex flex-col items-center justify-center text-center shadow-md h-64">
+          <div className="w-16 h-16 bg-emerald-50/50 border border-emerald-100/50 rounded-full flex items-center justify-center mb-4">
+            <span className="text-3xl">📊</span>
+          </div>
+          <h3 className="text-xl font-display font-bold text-slate-800 mb-2">Selecione os filtros para gerar o Rastreamento</h3>
+          <p className="text-slate-500 max-w-md">Escolha o período ou segmento desejado e clique em "Gerar Rastreamento" para visualizar os dados.</p>
+        </div>
+      ) : isLoading ? (
         <div className="flex flex-col items-center justify-center h-64 bg-slate-50 border border-slate-200 border-dashed rounded-2xl">
           <Loader2 className="w-8 h-8 animate-spin text-amber-500 mb-4" />
           <p className="text-slate-500 font-medium">Carregando registros de rastreamento...</p>
@@ -215,32 +224,30 @@ export const RastreamentoView = () => {
             Verifique se os filtros aplicados estão corretos para o período selecionado ou se o projeto Firebase está configurado adequadamente.
           </p>
           
-          {/* Diagnostic Box - Only helpful for debugging production */}
-          <div className="mt-4 p-4 bg-white border border-slate-200 rounded-xl text-left w-full max-w-md shadow-sm">
-            <h5 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Painel de Diagnóstico</h5>
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-[11px]">
-                <span className="text-slate-500 font-medium">Ambiente:</span>
-                <span className="text-slate-700 font-bold">{import.meta.env.MODE === 'production' ? 'PRODUÇÃO' : 'DESENVOLVIMENTO'}</span>
+          {/* Diagnostic Box - Only shown in production error/empty scenarios */}
+          {import.meta.env.MODE === 'production' && (
+            <div className="mt-4 p-4 bg-white border border-slate-200 rounded-xl text-left w-full max-w-md shadow-sm">
+              <h5 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Painel de Diagnóstico</h5>
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-[11px]">
+                  <span className="text-slate-500 font-medium">ID do Projeto:</span>
+                  <span className="text-slate-700 font-bold">{import.meta.env.VITE_FIREBASE_PROJECT_ID || 'NÃO DEFINIDO'}</span>
+                </div>
+                <div className="flex justify-between text-[11px]">
+                  <span className="text-slate-500 font-medium">API Key Status:</span>
+                  <span className={`font-bold ${import.meta.env.VITE_FIREBASE_API_KEY ? 'text-emerald-600' : 'text-red-500'}`}>
+                    {import.meta.env.VITE_FIREBASE_API_KEY ? 'CONFIGURADA' : 'AUSENTE'}
+                  </span>
+                </div>
               </div>
-              <div className="flex justify-between text-[11px]">
-                <span className="text-slate-500 font-medium">ID do Projeto:</span>
-                <span className="text-slate-700 font-bold">{import.meta.env.VITE_FIREBASE_PROJECT_ID || 'NÃO DEFINIDO'}</span>
-              </div>
-              <div className="flex justify-between text-[11px]">
-                <span className="text-slate-500 font-medium">API Key Status:</span>
-                <span className={`font-bold ${import.meta.env.VITE_FIREBASE_API_KEY ? 'text-emerald-600' : 'text-red-500'}`}>
-                  {import.meta.env.VITE_FIREBASE_API_KEY ? 'CONFIGURADA' : 'AUSENTE'}
-                </span>
-              </div>
+              <button 
+                onClick={loadAllDiagnostics}
+                className="mt-3 w-full py-2 bg-slate-900 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-colors"
+              >
+                Forçar Recarregamento Total
+              </button>
             </div>
-            <button 
-              onClick={loadAllDiagnostics}
-              className="mt-3 w-full py-2 bg-slate-900 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-colors"
-            >
-              Forçar Recarregamento Total
-            </button>
-          </div>
+          )}
         </div>
       ) : (
         <RastreamentoTable data={data} onRefresh={loadData} />

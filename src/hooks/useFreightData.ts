@@ -52,7 +52,7 @@ export const useFreightData = (filters: FilterState, trigger: number) => {
         if (filters.frota) {
           query = query.eq('FROTA', filters.frota);
         }
-        if (filters.tipo_frete) {
+        if (filters.tipo_frete && filters.tipo_frete !== 'Retira') {
           query = query.ilike('TIPO FRETE', `%${filters.tipo_frete}%`);
         }
 
@@ -94,6 +94,13 @@ export const useFreightData = (filters: FilterState, trigger: number) => {
           created_at: item['DATA'] || new Date().toISOString(),
         };
       });
+
+      // Filter by dynamic 'Retira' type if selected
+      if (filters.tipo_frete === 'Retira') {
+        mappedData = mappedData.filter(record => 
+          (!record.motorista || record.motorista.trim() === '') && record.valor === 0
+        );
+      }
 
       // JS fallback filter for month if year is not selected
       if (!filters.ano && filters.periodo) {

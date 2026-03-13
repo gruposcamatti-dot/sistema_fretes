@@ -133,10 +133,10 @@ export const RastreamentoFilters = ({ filters, setFilters, onGenerate, loading }
         <button
           onClick={onGenerate}
           disabled={loading}
-          className="flex items-center gap-2 px-6 py-3 bg-emerald-500 text-white rounded-xl text-sm font-semibold hover:bg-emerald-600 transition-all shadow-sm shadow-emerald-500/20 disabled:opacity-50"
+          className="flex items-center gap-2 px-6 py-3 bg-emerald-500 text-white rounded-xl text-sm font-semibold hover:bg-emerald-600 transition-all shadow-sm shadow-emerald-500/20 active:scale-95 disabled:opacity-50"
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-          Filtrar
+          Gerar Rastreamento
         </button>
       </div>
     </div>
